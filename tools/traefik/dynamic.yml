@@ -1,0 +1,15 @@
+http:
+  routers:
+    # Ziphaven router.
+    ziphaven:
+      rule: "Host(`ziphaven.iv0ks.dev`)"
+      entryPoints:
+        - websecure
+      service: ziphaven
+      tls: { certResolver: namecheap }
+
+  services:
+    ziphaven:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8100/"
