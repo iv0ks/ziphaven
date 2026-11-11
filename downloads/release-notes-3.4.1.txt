@@ -1,0 +1,19 @@
+Ziphaven 3.4.1 — Release notes
+================================
+Released: 2024-07-01
+Channel:  stable
+
+Highlights
+----------
+* Parallel extraction is now the default for archives over 64 MB.
+* New `zh verify` command checks signatures and checksums in one pass.
+* Desktop app remembers per-mirror download preferences.
+
+Fixes
+-----
+* Fixed a rare hang when resuming an interrupted multipart download.
+* Correctly honour HTTP_PROXY/HTTPS_PROXY on Windows.
+* SDK: `Archive.open()` no longer leaks a file handle on error paths.
+
+Checksums are published alongside every artefact on the downloads page.
+Thank you to everyone who reported issues this cycle.

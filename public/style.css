@@ -1,0 +1,376 @@
+/* Ziphaven — release & download hub.
+ *
+ * Visual identity: dark "developer tooling" aesthetic, amber (#f59e0b) accent
+ * on slate/charcoal, monospace touches for filenames and checksums. A top nav
+ * bar (no sidebar) + hero + a responsive grid of download cards. Deliberately
+ * distinct from the other labs (deskmint helpdesk blue/sidebar, medialoft
+ * violet media grid, snaptrail teal gallery, fetchly indigo list).
+ */
+
+:root {
+    --bg: #0b0f14;
+    --bg-2: #111722;
+    --panel: #151d2a;
+    --panel-2: #1b2534;
+    --border: #243040;
+    --text: #e6edf3;
+    --muted: #8b98a8;
+    --accent: #f59e0b;
+    --accent-2: #fbbf24;
+    --accent-soft: rgba(245, 158, 11, 0.12);
+    --green: #34d399;
+    --radius: 12px;
+    --maxw: 1080px;
+    font-synthesis: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(245, 158, 11, 0.08), transparent 60%),
+        var(--bg);
+    color: var(--text);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+}
+
+code {
+    font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ---- top nav ---------------------------------------------------------- */
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.9rem 1.5rem;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    color: #1a1205;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.brand-name {
+    font-size: 1.1rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.25rem;
+    margin-left: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.nav-links a {
+    color: var(--muted);
+    padding: 0.25rem 0;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-links a.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+}
+
+.nav-links a[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.nav-cta {
+    margin-left: auto;
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+/* ---- layout ----------------------------------------------------------- */
+.content {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 3.5rem;
+}
+
+/* ---- hero ------------------------------------------------------------- */
+.hero {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+    margin-bottom: 2.75rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--accent-2);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.hero h1 {
+    margin: 0 0 0.75rem;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.lede {
+    margin: 0;
+    color: var(--muted);
+    max-width: 44ch;
+}
+
+.hero-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 1.5rem;
+    background: linear-gradient(160deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.hero-badge {
+    font-weight: 600;
+}
+
+.hero-ver {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.hero-note {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* ---- downloads -------------------------------------------------------- */
+.downloads-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.downloads-head h2 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.sub {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.dl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.dl-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.dl-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.dl-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+
+.dl-ver {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+.dl-name {
+    margin: 0 0 0.2rem;
+    font-size: 1.05rem;
+}
+
+.dl-file {
+    margin: 0 0 0.9rem;
+    color: var(--muted);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.78rem;
+    word-break: break-all;
+}
+
+.dl-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin: 0 0 0.9rem;
+}
+
+.dl-meta dt {
+    color: var(--muted);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dl-meta dd {
+    margin: 0.1rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.dl-sum {
+    margin: 0 0 1rem;
+    color: var(--muted);
+    word-break: break-all;
+}
+
+.dl-btn {
+    margin-top: auto;
+    display: inline-block;
+    text-align: center;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #1a1205;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    transition: filter 0.15s ease;
+}
+
+.dl-btn:hover {
+    filter: brightness(1.08);
+}
+
+/* ---- tags ------------------------------------------------------------- */
+.tag {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--bg-2);
+}
+
+.tag-linux {
+    color: var(--accent-2);
+    border-color: rgba(245, 158, 11, 0.4);
+    background: var(--accent-soft);
+}
+
+.tag-windows {
+    color: #60a5fa;
+    border-color: rgba(96, 165, 250, 0.4);
+    background: rgba(96, 165, 250, 0.1);
+}
+
+.tag-sdk {
+    color: var(--green);
+    border-color: rgba(52, 211, 153, 0.4);
+    background: rgba(52, 211, 153, 0.1);
+}
+
+.tag-doc {
+    color: #c4b5fd;
+    border-color: rgba(196, 181, 253, 0.4);
+    background: rgba(196, 181, 253, 0.1);
+}
+
+/* ---- footer ----------------------------------------------------------- */
+.footer {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    justify-content: space-between;
+    color: var(--text);
+    font-size: 0.85rem;
+}
+
+.footer .muted,
+.muted {
+    color: var(--muted);
+}
+
+.footer code {
+    color: var(--accent-2);
+}
+
+/* ---- error page ------------------------------------------------------- */
+.error-box {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.error-box h1 {
+    font-size: 3rem;
+    margin: 0 0 0.5rem;
+    color: var(--accent);
+}
+
+.error-box .back {
+    color: var(--accent-2);
+}
+
+@media (max-width: 720px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-links {
+        display: none;
+    }
+}
