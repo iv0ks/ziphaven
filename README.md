@@ -1,23 +1,38 @@
 # Ziphaven
 
+![CWE-22](https://img.shields.io/badge/CWE--22-Path%20Traversal-red?style=flat-square)
+![PHP](https://img.shields.io/badge/PHP-Apache-777BB4?style=flat-square&logo=php&logoColor=white)
+![Docker](https://img.shields.io/badge/Lab-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
 [![GHCR](https://img.shields.io/badge/ghcr.io-iv0ks%2Fziphaven-f59e0b?logo=docker)](https://github.com/iv0ks/ziphaven/pkgs/container/ziphaven)
 
-
 **Ziphaven is an intentionally vulnerable application built for security education.** It is a small release & download hub with a deliberate [path traversal](https://owasp.org/www-community/attacks/Path_Traversal)
-(CWE-22) flaw — hidden behind a filter that inspects the filename *before*
-decoding it — so you can practice finding and exploiting it in a safe and
-controlled environment.
+(CWE-22) flaw — hidden behind a filter that inspects the filename _before_ decoding it — so you can practice finding and exploiting it in a safe and controlled environment.
 
 <br>
 
-## 🗂️ Project layout
+<div align="center">
+
+| 🛡️ Vulnerability | 🎯 Difficulty | 🛠️ Stack | 🚩 Entry point |
+| :--- | :--- | :--- | :--- |
+| Path Traversal (CWE-22) | ⭐⭐⭐⭐ Level 5 (Filter before decode) | PHP · Apache | `GET /download.php?file=<name>` |
+
+</div>
+
+<br>
+
+> [!NOTE]
+> The guided, spoiler-free path is [GUIDE.md](GUIDE.md); the full answer waits in [SOLUTION.md](SOLUTION.md) whenever you want it.
+
+<br>
+
+## 📂 Project layout
 
 The repository is organised so the vulnerable code is easy to find and reason
 about. Three areas, clearly separated: the **application** (PHP) with its public
 front controllers in `public/` and its logic in `src/`, the **served data** in
-`downloads/` (the directory the app is *meant* to expose), and the **tooling**
+`downloads/` (the directory the app is _meant_ to expose), and the **tooling**
 around it (Docker image with Apache + mod_php, CI/CD, linters). The challenge
-flag is deliberately kept *out* of both the repo and the served directory — see
+flag is deliberately kept _out_ of both the repo and the served directory — see
 the note under the tree.
 
 ```
@@ -51,7 +66,7 @@ ziphaven/
 The PHP code lives in `public/` + `src/` and reads its files from
 `downloads/`, just like a real release hub would. The target `flag.txt` is
 **not** in the repo: the Docker image writes it to `/app/flag.txt` at build
-time — *outside* the served `downloads/` dir — so traversal can reach it while
+time — _outside_ the served `downloads/` dir — so traversal can reach it while
 the flag stays out of version control.
 
 <br>
@@ -72,6 +87,8 @@ create it once before the first run:
 docker network create iv0ks-dev
 ```
 
+<br>
+
 #### Option A — just the app
 
 Start only the `ziphaven` service (Compose skips `traefik` when you name a
@@ -87,6 +104,8 @@ The download hub is now reachable directly at:
 
 That is all you need to start playing with Burp Suite.
 
+<br>
+
 #### Option B — full stack with Traefik (HTTPS + hostname)
 
 Bring up everything to also expose the app through Traefik with TLS:
@@ -95,7 +114,7 @@ Bring up everything to also expose the app through Traefik with TLS:
 docker compose up -d --build
 ```
 
-Now the *same* app is reachable two ways at once:
+Now the _same_ app is reachable two ways at once:
 
 - **<http://localhost:8100>** — direct, no TLS (handy for quick testing).
 - **<https://ziphaven.iv0ks.dev>** — proxied by Traefik with a real certificate.
@@ -103,6 +122,15 @@ Now the *same* app is reachable two ways at once:
 Traefik routing is defined in `tools/traefik/`. TLS uses the ACME DNS-01
 challenge via Namecheap, so Traefik needs those API credentials — copy
 `.env.example` to `.env` and fill them in (the `.env` file is gitignored).
+
+<br>
+
+> [!CAUTION]
+> The `ziphaven.iv0ks.dev` hostname must resolve to the host running the stack.
+> For purely local experiments, Option A (localhost) is simpler and needs no
+> DNS or certificates.
+
+<br>
 
 #### Developing without Docker
 
@@ -118,45 +146,27 @@ DATA_ROOT="$PWD" php -S 127.0.0.1:8100 -t public
 
 ## 🎯 The Challenge
 
-Ziphaven serves release artefacts (CLI, desktop, SDK) through a download
-endpoint. The endpoint tries to keep you inside the downloads folder by
-rejecting any filename that contains `../` — but it runs that check **before**
-an extra decoding step. Your goal:
+### The Scenario
 
-> **Read a file that lives _outside_ the downloads directory — specifically,
-> capture the flag stored in `flag.txt`.**
+Ziphaven is a release & download hub: it serves build artefacts from a
+`downloads/` folder. This developer *knows* about traversal and rejects any
+filename containing `../` — but runs that check **before** an extra decode step.
+You're going to prove that validating before you decode is the same as not
+validating at all.
 
-The flag has the format `FLAG{...}`.
+### Your objective
 
-| | |
-|---|---|
-| **Vulnerability** | Path Traversal (CWE-22) |
-| **Difficulty** | ⭐⭐⭐⭐ Level 5 — filter runs before URL-decoding |
-| **Stack** | PHP · Apache (mod_php) |
-| **Entry point** | `GET /download.php?file=<name>` |
+Read a file that lives _outside_ the downloads directory — specifically, capture the flag in `flag.txt`.
 
-<details>
-<summary>Hint 1</summary>
-Click <code>Download</code> and watch the request in Burp. The filename goes
-straight into a <code>?file=</code> parameter.
-</details>
+> [!NOTE]
+> The flag has the format `FLAG{...}`.
 
-<details>
-<summary>Hint 2</summary>
-A plain <code>../</code> is rejected (400) — so there is a filter. But <em>when</em>
-does it run relative to decoding? What does the server do to the value
-<em>after</em> the check? Think about what it sees if the <code>../</code> is still
-percent-encoded.
-</details>
+### The rules
 
-<details>
-<summary>Hint 3</summary>
-The webserver decodes the query string once already. To keep a <code>../</code>
-hidden from the filter but alive for the app's extra decode, encode it
-<em>twice</em>: <code>%252e%252e%252f</code>.
-</details>
+Everything happens over HTTP against the running app — no need to
+read the source to win (though you can). The flag is **not** in the repo: it's
+baked into the container, outside `downloads/`, so you have to actually reach
+it.
 
-A full walkthrough lives in [SOLUTION.md](SOLUTION.md) (spoilers!).
-
-New to path traversal, or want a guided, non-spoiler approach? Start with the
-**[Learning Guide](GUIDE.md)**.
+> [!TIP]
+> For the full method, the **[Learning Guide](GUIDE.md)** walks you through it.
